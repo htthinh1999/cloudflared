@@ -22,7 +22,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         run: |
-          echo $PAT | helm registry login ghcr.io/htthinh1999 --username htthinh1999 --password-stdin
+          echo ${{ secrets.PAT }} | helm registry login ghcr.io/htthinh1999 --username htthinh1999 --password-stdin
 
       - name: Push helm chart to GitHub Container Registry
         env:
