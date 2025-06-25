@@ -149,12 +149,6 @@ The project includes a GitHub CI/CD pipeline that:
    helm install test-cloudflared charts/cloudflared
    ```
 
-### Scripts
-
-- `./auto-increment-git-tag.sh` - Automatically increment patch version
-- `./current-git-tag.sh` - Get the current git tag version
-- `./update-helm-chart.sh <version>` - Update chart version in Chart.yaml and values.yaml
-
 ## Monitoring
 
 The deployment includes built-in monitoring capabilities:
