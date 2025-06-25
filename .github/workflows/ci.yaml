@@ -26,14 +26,14 @@ jobs:
 
       - name: Create helm chart with image tag
         env:
-          CHART_VERSION: ${{ steps.tag_version.outputs.tag }}
+          CHART_VERSION: ${{ steps.tag_version.outputs.new_version }}
         run: |
           sed -i -e "s/^version:.*/version: $CHART_VERSION/" ./charts/cloudflared/Chart.yaml
           sed -i -e "/^appVersion:.*/a appVersion: $CHART_VERSION" ./charts/cloudflared/Chart.yaml
 
       - name: Push helm chart to GitHub Container Registry
         env:
-          CHART_VERSION: ${{ steps.tag_version.outputs.tag }}
+          CHART_VERSION: ${{ steps.tag_version.outputs.new_version }}
         run: |
           cd charts/cloudflared
           helm package .
