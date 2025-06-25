@@ -1,0 +1,55 @@
+name: Build & Push Helm Chart
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Create Helm chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get new tag version
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dry_run: true
+
+      - name: Login to GitHub Container Registry
+        run: |
+          echo $PAT | helm registry login ghcr.io/htthinh1999 --username htthinh1999 --password-stdin
+
+      - name: Push helm chart to GitHub Container Registry
+        env:
+          CHART_VERSION: ${{ steps.tag_version.outputs.tag }}
+        run: |
+          cd charts/cloudflared
+          helm package .
+          helm push cloudflared-$CHART_VERSION.tgz oci://ghcr.io/htthinh1999
+
+      - name: Bump version and push tag dry-run
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dry_run: false
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          release_name: ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log out of GitHub Container Registry
+        if: always()
+        run: helm registry logout ghcr.io/htthinh1999

@@ -1,0 +1,45 @@
+# Default values for cloudflared.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: cloudflare/cloudflared
+  tag: 2025.6.1
+
+cloudflaredConfig:
+  # Name of the tunnel you want to run
+  tunnel: microk8s-blockchain-tunnel
+  credentials-file: /etc/cloudflared/creds/credentials.json
+  # Serves the metrics server under /metrics and the readiness server under /ready
+  metrics: 0.0.0.0:2000
+  # Autoupdates applied in a k8s pod will be lost when the pod is removed or restarted, so
+  # autoupdate doesn't make sense in Kubernetes. However, outside of Kubernetes, we strongly
+  # recommend using autoupdate.
+  no-autoupdate: true
+  # The `ingress` block tells cloudflared which local service to route incoming
+  # requests to. For more about ingress rules, see
+  # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/configuration/ingress
+  #
+  # Remember, these rules route traffic from cloudflared to a local service. To route traffic
+  # from the internet to cloudflared, run `cloudflared tunnel route dns <tunnel> <hostname>`.
+  # E.g. `cloudflared tunnel route dns microk8s-blockchain-tunnel web-app.com`
+  # E.g. `cloudflared tunnel route ip microk8s-blockchain-tunnel 192.168.0.0/16`
+  warp_routing:
+    enabled: true
+  ingress:
+  # The first rule proxies traffic to the httpbin sample Service defined in app.yaml
+  - hostname: web-app.com
+    service: http://web-app.default.svc.cluster.local:3000
+  # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.
+  - service: http_status:404
+
+cloudflaredTunnelSecretName: tunnel-credentials
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
