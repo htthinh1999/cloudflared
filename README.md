@@ -9,7 +9,7 @@ This repository provides a production-ready Helm chart for deploying cloudflared
 ## Features
 
 - 🚀 **Production-ready Helm chart** with configurable values
-- 🔄 **Automated CI/CD pipeline** with GitLab CI
+- 🔄 **Automated CI/CD pipeline** with GitHub Actions
 - 📦 **Semantic versioning** with automatic tag increment
 - 🔧 **Configurable ingress rules** for multiple services
 - 📊 **Built-in metrics and health checks** on port 2000
@@ -35,7 +35,7 @@ This repository provides a production-ready Helm chart for deploying cloudflared
 
 2. **Add the Helm repository:**
    ```bash
-   helm repo add cloudflared https://your-registry-url/helm/stable
+   helm repo add cloudflared ghcr.io/htthinh1999
    helm repo update
    ```
 
@@ -100,23 +100,20 @@ cloudflaredConfig:
 
 ```
 cloudflared/
-├── charts/cloudflared/          # Helm chart files
+├── .github/workflows/ci.yaml   # CI/CD pipeline configuration
+├── charts/cloudflared/         # Helm chart files
 │   ├── Chart.yaml              # Chart metadata
 │   ├── values.yaml             # Default configuration values
 │   └── templates/              # Kubernetes manifests
 │       ├── deployment.yaml     # Main cloudflared deployment
 │       ├── configmap.yaml      # Configuration file
-│       ├── hpa.yaml           # Horizontal Pod Autoscaler
-│       └── _helpers.tpl       # Template helpers
-├── .gitlab-ci.yml              # CI/CD pipeline configuration
-├── auto-increment-git-tag.sh   # Automatic version bumping
-├── current-git-tag.sh          # Get current version
-└── update-helm-chart.sh        # Update chart version
+│       ├── hpa.yaml            # Horizontal Pod Autoscaler
+│       └── _helpers.tpl        # Template helpers
 ```
 
 ## CI/CD Pipeline
 
-The project includes a GitLab CI/CD pipeline that:
+The project includes a GitHub CI/CD pipeline that:
 
 1. **Validates** the chart on every commit
 2. **Auto-increments** semantic version tags on main branch
